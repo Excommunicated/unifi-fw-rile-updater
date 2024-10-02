@@ -1,0 +1,6 @@
+FROM php:bullseye
+
+COPY . /usr/src/app
+WORKDIR /usr/src/app
+
+CMD php update-fw-rule.php "user=${user}" "password=${password}" "url=${url}" "site=${site}" "version=${version}" "file=${file}" "host=${host}" "rule=${rule}"

@@ -1,0 +1,36 @@
+name: Build and Release
+
+on: 
+    push:
+        branches: [main]
+jobs:
+    build:
+        name: build-docker-image
+        runs-on: ubuntu-latest
+        steps:
+            - name: Bump Version and push tag
+              uses: anothrNick/github-tag-action@1.71.0
+              id: semrel
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                WITH_V: false
+            - uses: actions/checkout@v4
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v3.3.0
+              with:
+                username: ${{ secrets.DOCKER_USERNAME }}
+                password: ${{ secrets.DOCKER_PASSWORD }}
+            - name: Extract metadata (tags, labels) for Docker
+              id: meta
+              uses: docker/metadata-action@v5.5.1
+              with:
+                images: excommunicated/unifi-pf-rule-updater
+            - name: Build and push Docker image
+              id: push
+              uses: docker/build-push-action@v6.9.0
+              with:
+                context: .
+                file: ./Dockerfile
+                push: true
+                tags: ${{ steps.semrel.outputs.tag }}
+                labels: ${{ steps.meta.outputs.labels }}

@@ -1,0 +1,6 @@
+[
+    {
+        "host": "myserver.customdomain.url",
+        "rule": "ALLOW myserver PF Rule"
+    }
+]
