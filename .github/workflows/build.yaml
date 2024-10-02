@@ -7,8 +7,12 @@ jobs:
     build:
         name: build-docker-image
         runs-on: ubuntu-latest
+        permissions:
+          contents: write
         steps:
             - uses: actions/checkout@v4
+              with:
+                fetch-depth: '0'
             - name: Bump Version and push tag
               uses: anothrNick/github-tag-action@1.71.0
               id: semrel
