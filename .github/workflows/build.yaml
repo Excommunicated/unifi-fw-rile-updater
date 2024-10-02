@@ -8,13 +8,13 @@ jobs:
         name: build-docker-image
         runs-on: ubuntu-latest
         steps:
+            - uses: actions/checkout@v4
             - name: Bump Version and push tag
               uses: anothrNick/github-tag-action@1.71.0
               id: semrel
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 WITH_V: false
-            - uses: actions/checkout@v4
             - name: Log in to Docker Hub
               uses: docker/login-action@v3.3.0
               with:
