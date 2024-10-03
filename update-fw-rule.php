@@ -98,7 +98,7 @@ while (true) {
                 $rule_to_update = find_rule($rules, $element->rule);
                 if ($rule_to_update !== false) {
                     if ($rule_to_update->src === $newip) {
-                        println("$element->host name has not changed. skipping");
+                        println("$element->host IP has not changed. skipping");
                         continue;
                     }
                     $rule_to_update->src = $newip;
