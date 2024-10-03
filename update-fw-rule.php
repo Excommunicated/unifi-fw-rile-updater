@@ -75,7 +75,7 @@ $unifi_connection = new UniFi_API\Client(
     $controllerversion
 );
 
-function find_rule($portforwards, $rulename)
+function find_rule(array $portforwards, string $rulename)
 {
     foreach ($portforwards as $element) {
         if ($rulename == $element->name) {
@@ -88,19 +88,25 @@ function find_rule($portforwards, $rulename)
 while (true) {
 
     $loginresults = $unifi_connection->login();
-    $rules = $unifi_connection->list_portforwarding();
-    foreach ($hostRules as $element) {
-        $newip = gethostbyname($element->host);
-        $rule_to_update = find_rule($rules, $element->rule);
-        if ($rule_to_update->src === $newip) {
-            println("$element->host name has not changed. skipping");
-            continue;
+    if ($loginresults === true) {
+        $rules = $unifi_connection->list_portforwarding();
+        if (is_array($rules)) {
+            foreach ($hostRules as $element) {
+                $newip = gethostbyname($element->host);
+                $rule_to_update = find_rule($rules, $element->rule);
+                if ($rule_to_update !== false) {
+                    if ($rule_to_update->src === $newip) {
+                        println("$element->host name has not changed. skipping");
+                        continue;
+                    }
+                    $rule_to_update->src = $newip;
+                    $id = $rule_to_update->_id;
+                    $results = $unifi_connection->custom_api_request("/api/s/default/rest/portforward/$id", 'PUT', $rule_to_update);
+                    println(json_encode($results, JSON_PRETTY_PRINT));
+                }
+            }
         }
-        $rule_to_update->src = $newip;
-        $id = $rule_to_update->_id;
-        $results = $unifi_connection->custom_api_request("/api/s/default/rest/portforward/$id", 'PUT', $rule_to_update);
-        println(json_encode($results, JSON_PRETTY_PRINT));
     }
     println("sleeping for 1hr");
-    sleep(3600);
+    sleep(5);
 }
