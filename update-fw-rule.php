@@ -17,7 +17,6 @@ ONLYONE:
 */
 unset($argv[0]);
 parse_str(implode('&', $argv), $_requestArgs);
-
 function println(mixed $msg): void
 {
     printf("%s\n", $msg);
@@ -30,6 +29,7 @@ function check_parameter(array &$args, string $name, bool $required = true, stri
         println($name . " is required");
         exit(1);
     } elseif (!$exists || $args[$name] === "") {
+        println($name . " not set. returning default");
         return $default;
     }
     return $args[$name];
@@ -41,6 +41,8 @@ $controllerpassword = check_parameter($_requestArgs, "password");
 $controllerurl = check_parameter($_requestArgs, "url");
 $controllerversion = check_parameter($_requestArgs, "version", false, "8.0.28");
 $site_id = check_parameter($_requestArgs, "site", false, "default");
+$poll = check_parameter($_requestArgs, "interval", false, "3600");
+
 
 // check that either file or the rule/host are set
 $file = check_parameter($_requestArgs, "file", false);
@@ -107,6 +109,6 @@ while (true) {
             }
         }
     }
-    println("sleeping for 1hr");
-    sleep(5);
+    println("sleeping for " . $poll . " seconds");
+    sleep(intval($poll));
 }

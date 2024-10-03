@@ -3,4 +3,4 @@ FROM php:bullseye
 COPY . /usr/src/app
 WORKDIR /usr/src/app
 
-CMD php update-fw-rule.php "user=${user}" "password=${password}" "url=${url}" "site=${site}" "version=${version}" "file=${file}" "host=${host}" "rule=${rule}"
+CMD php update-fw-rule.php "user=${UNIFI_USER}" "password=${UNIFI_PASSWORD}" "url=${UNIFI_URL}" "site=${UNIFI_SITE}" "version=${UNIFI_VERSION}" "file=${UNIFI_RULE_FILE}" "host=${UNIFI_RULE_HOST}" "rule=${UNIFI_RULE_NAME}" "interval=${UNIFI_INTERVAL}"
