@@ -29,7 +29,6 @@ function check_parameter(array &$args, string $name, bool $required = true, stri
         println($name . " is required");
         exit(1);
     } elseif (!$exists || $args[$name] === "") {
-        println($name . " not set. returning default");
         return $default;
     }
     return $args[$name];
@@ -69,14 +68,6 @@ if ($fileExists) {
 
 $debug = true;
 
-$unifi_connection = new UniFi_API\Client(
-    $controlleruser,
-    $controllerpassword,
-    $controllerurl,
-    $site_id,
-    $controllerversion
-);
-
 function find_rule(array $portforwards, string $rulename)
 {
     foreach ($portforwards as $element) {
@@ -88,7 +79,14 @@ function find_rule(array $portforwards, string $rulename)
 }
 
 while (true) {
-
+    $unifi_connection = new UniFi_API\Client(
+        $controlleruser,
+        $controllerpassword,
+        $controllerurl,
+        $site_id,
+        $controllerversion
+    );
+    
     $loginresults = $unifi_connection->login();
     if ($loginresults === true) {
         $rules = $unifi_connection->list_portforwarding();
@@ -105,10 +103,12 @@ while (true) {
                     $id = $rule_to_update->_id;
                     $results = $unifi_connection->custom_api_request("/api/s/default/rest/portforward/$id", 'PUT', $rule_to_update);
                     println(json_encode($results, JSON_PRETTY_PRINT));
-                }
+                } 
             }
         }
     }
+    $unifi_connection->logout();
+    $unifi_connection->__destruct();
     println("sleeping for " . $poll . " seconds");
     sleep(intval($poll));
 }
